@@ -1,0 +1,41 @@
+< Router 기본 환경설정 >
+enable
+conf t
+hostname R2
+no ip domain-lookup
+enable secret cisco
+line console 0
+ exec-timeout 0 0
+ logging synchronous
+ password ccna
+ login
+end
+
+
+< Interface 설정 >
+ - L2 프로토콜 PPP 설정
+ - IP address : 10.1.1.0/24
+ - Bandwidth : 64Kbps
+
+conf t
+interface serial 0/0
+ ip address 10.1.1.2 255.255.255.0
+ encapsulation ppp
+ bandwidth 64
+ no shutdown
+end
+
+
+< 설정 확인 명령어 >
+ - 인터페이스 간략 확인
+   show ip interface brief
+
+ - 인터페이스 상세 확인
+   show interface  {type  slot/port}
+
+ - 연결성 확인
+   ping  x.x.x.x(목적지 IP)
+
+ - '현재 적용 중'인 전체적인 설정 확인
+   show running-config
+

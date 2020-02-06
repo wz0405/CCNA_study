@@ -1,0 +1,28 @@
+Standard ACL
+	명령어
+	R1(config)#acccess-list { 1~99 } {permit|deny} src-IP[wildcard]
+		src-IP 송신지 주소
+	R1(config-if)# ip access-group {1~99} {in|out}
+		디폴트 out
+	show ip access-list(리스트확인하기,트래픽횟수확인가능)
+		시퀀스넘버가 작을수록 먼저확인
+Extended IP Traffic Filter list
+	R1(config)# access-list {100~199} {permit|deny} 
+	{protocol} : protocol : tcp / udp / http : 상위계층시 포트번호를 꼭 입력해야함
+	src-IP[wildcard][src-port] (출발지주소)
+	dst-IP[wildcard][dst-port] (목적지주소)
+		 port: 포트번호를 사용해서 어플리케이션 계층을 막음 (ex)eq 80)
+	ex)모든 프로토콜 => ip 
+		access-list 101 deny tcp s d eq21(ftp)
+		access-list 101 deny tcp s d eq20(ftp)
+		access-list 101 permit ip any any
+		
+와일드마스크
+	192.168.2.2 0.0.0.0 대신 host
+	0.0.0.0       255.255.255.255 대신 any
+
+	ex) -특정네트워크만 거부하는 엑세스 리스트 -> 허용 문장이 필요함(모든주소거부가 마지막에 존재)
+	     -특정네트워크만 허용(문장 하나로 끝)
+
+실습
+	1. R3에 텔넷접속은 오직 R1만 되도록 설정하고 핑은 R4만 가능하도록 R2에서 ACL을 설정하고 확인한다.

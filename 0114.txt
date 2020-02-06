@@ -1,0 +1,69 @@
+신소희
+bignet@tistory.com
+bignet.tistory.com
+이론+실습
+네트워크 = 통신
+1주차:네트워크 이해 (이론,구조,기술)
+2주차:네트워크장비기본설정
+3주차:라우팅
+4주차:ACL,NAT,Switch
+윈도우+R \\Edu << 공유폴더 경로
+@KGITBANK <<불편사항
+
+OSI 7 LAYER vs TCP/IP
+두대이상장비가 연결되어 통신이 가능한상태 = 네트워크
+범위 / 목적에 따라 기술이 달라짐
+LAN (local area network)
+	-좁은지역(자기기준:현재위치,내부네트워크)통신구역 보통100mbps(100BaseTx네트워크가 일반적)
+WAN (wide Area Network)
+	-넓은지역(외부네트워크),분류기술에따라 LAN과 차이
+	Internetwork 다수의 네트워크가 서로접속하여 통합된것
+	통신규칙:프로토콜 RFC(IETF) << 정의나 설명(목적,구조) 문서로 정리되어있음
+
+통신모델 | TCP/IP
+	TCP/IP Model
+	Application,Transport,Internet(주소),Link(물리)
+	OSI Model
+	기술계발시 참조할때 사용 
+
+상위계층 5~7계층 Uper layer (데이터 생성)
+	7계층 Application Layer
+	-사용자에게 인터페이스를 제공(UI)
+	6계층 Presentation Layer
+	-사용자 또는 컴퓨터 처리를 위해 데이터의 형식을 변환, 표현
+	5계층 Session Layer
+	-응용프로그램간의 연결을 관리하는 계층 (통신필요의 명령) , 통신요구, 통신이필요한근거
+
+하위계층 1~4계층 Lower layer (데이터전달)
+	4계층 Transport Layer 
+	-데이터 전송을 담당하는 계층 , 문제발생시 책임을 짐, 통신시 1계층까지 내려가야함
+	제어기능을 통해 신뢰성 보장, 서비스(프로토콜)를 구분함(데이터를 전달받고 읽는역할이 다름)
+	-포트번호(서비스구분번호)
+	16비트로 구성되어있다. 0~65535번
+	 /Well-Known port로 0~1023번이 지정되어있음(HTTP 80번 FTP 20,21번, DNS 53번 등등..)
+	-신뢰성보장  제어(잘되게만듬)
+		-오류제어(재전송)
+		-흐름제어(수신자가 받을/처리할수있는 양 조절)
+	3계층 Network Layer (네트워크는 방을 연결) 
+	-물리적으로 공간을 분할
+	-네트워크를 논리적 주소로 구분(실체를갖지않는 목적지주소등을 식별) 하고 통신 경로를 결정(안내)
+	-논리적주소 IP,IPX,Apple-talk (통합적 범위에서 나줘짐)
+	-Routing 
+		데이터의 통신경로 결정
+		담당하는 장비를 라우터
+	2계층 Data-link Layer
+	-단말 사이의 물리적 구성에 따라 다양한 프로토콜이 제공되는 계층
+	-프로토콜이 달라지는 계층
+	-물리적 구성의 분류
+		point to point : 1:1연결 ex) ppp,HDLC
+		multiple access 여러장비 연결(3대이상) 모양이 다양함(프로토콜이 다름) ex) 이더넷 < Mac주소사용 분배기사용:스위치
+	-식별이 필요함
+	1계층 Physical Layer
+	-전기적 신호를 사용해 케이블로 데이터를 실제 전송하는 계층
+	-UTP Cable (twisted pair cable)의 종류중 하나
+	-다양한 인코딩 방식
+	-케이블의 재질과 규격과 표준
+
+	
+	
+	

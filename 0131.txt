@@ -1,0 +1,58 @@
+실습
+	RIP 사용시
+	ex)	src : 2.2.2.2 (2번pc)
+		dst : 100.1.1.1 (1번pc)
+	-2.2.2.0 입력시 => 2.0.0.0으로 저장됨(서브넷팅 되지않음) 
+		A클래스로 취급하기때문
+		pc1번이 pc3번에게 통신할때 오토서머니 기능으로 라우터2번에서 제기능을못함
+		-> classless하게 설정해야함 -> 버전2(서브넷마스크를 붙임), no auto-summary(서브넷팅됨)
+	-RIP사용시 연결문제에대한 트러블슈팅
+	-clear ip route *(특정목적지 ip) : 라우팅 테이블 지우기
+
+EIGRP
+	개요
+	1. IP를 베이스로 만들어짐
+	2. 네트워크 토폴로지 변화에 수렴시간이 빠르다(업데이트 주기가없음,즉각적인 업데이트가능,대체경로를 미리뽑음)
+	Multiple Routed Protocol(IP,IPX,Apple talk)을 지원한다
+	EIGRP는 Auto Summary 및 Manual Summary를 지원한다
+	정상 운용 중에 적은 네트워크 자원을 이용해 라우팅 테이블을 유지한다.
+	3. Classless Routing Protocol 지원 (VLSM방식도 지원가능)
+
+	5가지의 패킷
+		1. Hello
+		-신뢰관계 형성
+		-Ack 번호를 0을 가지고 멀티캐스트(224.0.0.10)
+		-5초마다 주기적으로 주면서 연결성을 확인함(15초까지 hello를 Holdtime을 가졌다가 안오면 인접관계 삭제)
+
+		2. Update
+		-Send routing updates
+		-새로운 이웃 발견시 토폴로지 테이블 동기화(유니케스트)
+		-토폴로지 변경 발견시(멀티케스트)
+		-인접관계 형성시 사용
+		-광고정보를 담아서 보내는 패킷(주기적x 변동사항발생시 간혈적 사용)
+		-최적경로+돌아가는경로 모두 줌
+
+		3. Query
+		-Ask neighbors about routing information (항상 멀티캐스트)
+		-문제발생시
+		4. Reply
+		-Response to query about routing information(유니케스트)
+		5. Ack(응답)
+		-hello를 제외한 나머지에 대한 ack
+
+		발생순서
+		Hello Update Ack 문제발생시 Query Ack Reply Ack
+	Terminolohy
+		-Neighbor Table : 인접 장비에대한 정보를 테이블로 가지고있음
+		-Topolohy Table : 라우팅 정보교환에 의해서 알게된 모든 네트워크에 대한 Topology Table을 유지
+		-Routing Table : 최적경로를 보유
+		-Successor 목적지에 대한 Primary Route이다.
+		-Feasible Successor: 목적지에 대한 백업 라우터, 여러개가능
+
+		Neighbor Table-IP => Topology Table -IP(Successor와Feasible Successor 올림)  => Routing Table(Successor를 올림)
+	-Rip은 프로세스 하나로만 사용(통합)
+	-나머지는 프로세스를 별도로 사용가능(분할)
+	명령어
+		-router eigrp asn(as번호)
+		-network (주소)
+		-EIGRP = D로 표현됨

@@ -1,0 +1,37 @@
+실습
+	show running-config   확인할것
+	show ip interface brief 확인할것
+	대역폭과 클럭이 잘 설정된곳을 DCE/DTE 결정
+
+Backup & Restore
+	-자료를 물리적으로 복사하는것을 백업이라고함.
+	-TFTP서버에 백업할예정
+	-다른위치로 복사 백업 정보를 가져오면 복구
+	-show flash(라우터정보확인)
+	-운영체제
+		C2500(2500라우터)-js-i-123(12.3버젼).3(릴리즈버전).bin
+	-copy flash tftp(백업 파일의 명칭을 적지않고 장소를적음)
+		-파일이름 적기
+		-remote host : (상대 장비) 적기(tftp장비주소 입력)
+	-copy tftp flash
+	
+	실습
+		R1의 IOS파일을 R1-IOS.bin 이름으로 TFTP에 백업한다.
+		R2의 running-config를 R2-run.cfg 이름으로 TFTP에 백업한다.	
+			-copy running-config tftp
+		TFTP에 백업된 R2-run.cfg 설정 파일을 R1의 NVRAM으로 복사한다.
+			-copy tftp startup-config
+
+	디바이스 설정값 저장 
+		copy running-config startup-config
+	디바이스 설정값 백업
+		copy running-config tftp
+	플래시 백업
+		copy flash tftp
+	디바이스 설정값 restore (local)
+		copy startup-config running config
+	디바이스 설정값 restore (tftp)
+		copy tftp running-config
+	-백업/복구과정에서 파일 이름이 같은게 있으면 기존의 데이터가 날아가고 정보만 저장됨
+	  *RAM에는 지워지지않고 정보가 합쳐짐(덮어쓰기x)
+

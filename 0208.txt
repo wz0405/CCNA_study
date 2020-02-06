@@ -1,0 +1,92 @@
+OSPF
+	-Link State Protocol
+	-Link State 정보를 광고하며 이를 LSA라고 한다.
+	-목적지 경로에 대한 최적의 정보를 SPF알고리즘을 사용하여 계산
+	-LSA(Link-state-Advertisement)
+	-특징 
+		1.신뢰단계 존재(eigrp와 동작방식이 흡사함)
+		2.auto-summary기능X
+		3.IP base
+		4.네트워크에 관련된 상태정보를 주고받음
+		5.별도지정이 없으면 라우터아이디는 가장 높은 IP로 설정
+SPF 알고리즘
+	cost = 10^8 / bandwidth (반비례 관계)
+Link State의 계층적 구조
+	-vector 보다 리소스가 더 큼
+	-AS가 클때는 Link-state가 유리함(Area로 나눌수있음)
+	-ABR(백본 라우터)가 외부 네트워크 관리
+명령어
+	-router ospf process-id
+	-광고에 참여할 연결된 네트워크 선택
+	-네트워크 정보는 반드시 와일드 마스크와 함께설정해야함
+	-Area정보도 반드시 포함, Single area에선 어떤 번호를 사용해도 무방
+		-network address 와일드마스크 area area-id
+실습문제(ospf)
+	<R1>
+	-네트워크 범위대로 광고 설정
+	router ospf 1
+	network 172.16.1.16 (/28<=255.255.255.240<=255-240) 0.0.0.15 area 0
+	network 192.168.10.0 (/30<=255.255.255.252) 0.0.0.3 area 0
+	network 192.168.10.4 0.0.0.3 area 0
+	<R2>
+	-인터페이스 IP주소대로 광고설정
+	router ospf 1
+	network 10.10.10.1 0.0.0.0 area 0 (숫자를 광고하는게 아닌 광고범위 설정임)
+	network 192.168.10.2 0.0.0.0 area 0 (숫자를 광고하는게 아닌 광고범위 설정임)
+	network 192.168.10.9 0.0.0.0 area 0 (숫자를 광고하는게 아닌 광고범위 설정임)
+	<R3>
+	-임의의 범위를 지정하여 광고 설정
+	router ospf 1
+	network 172.16.1.0 0.0.0.255 area 0
+	network 192.168.10.0 0.0.0.255 area 0
+	
+	192.168.10.0
+	192.168.20.0
+	192.168.30.0
+	-->network 192.168.0.0 0.0.255.255
+
+enable
+conf t
+hostname R3
+enable secret cisco
+no ip domain-lookup
+line console 0
+exec-timeout 0 0
+logging synchronous
+exit
+line vty 0 4
+no login
+exit
+
+ACL Concept (Access Control List)
+	목적 ex)출석부
+	1.특정 사용자의 접근을 제한하고자 하는 경우
+		수신한 패킷의 출발지 주소를 확인하여 네트워크에 접근할 수있는 사용자와 그렇지 않은 사용자의 구분
+	2.특정 서비스의 이용을 제한하고자 하는 경우
+		웹서비스를 막거나 텔넷의 사용을 제한하는등 네트워크 별로 제한하고자 하는 프로토콜의 종료룰 표시하여 필터링
+	3.라우팅 경로의 조정이 필요한 경우(object형태로 만들어놓음, 관리적인목적)
+		다이나믹 방식을 사용하여 라우팅을 한 경우 관리자가 원하는 대로 경로조정이 되자 않은 경우에는 ACL를 사용하여 추가적 조정가능
+
+	종류(조건)
+		Standard 출발지 주소만 확인하는 기본 ACL
+			-서비스나 특정 트래픽의 구분 없이 필터링하는 경우에 사용
+			-특정 네트워크릐 범위를 지정하여 object로 사용할 경우에도 쓰임
+		Extended 여러 옵션을 확인하는 확장 ACL(and연산)
+			-출발지 목적지 주소, 프로토콜과 포트번호까지 확인하여 필터링하는방식
+			-특정 서비스나 트래픽의 구분을 통해 좀더 상세한 필터링 가능.
+	First match rule(순서대로 처리됨, 아래쪽에 deny부분이 있더라도 전에 정책에 permit되면 통과됨)
+		-패킷 필터링 시 Access list의 정책의 위에서 부터 비교를 하며 패킷의 내용과 부합하는 정책이 발견되면 해당 정책에 의해 처리된다.
+		-ACL마지막 줄에는 모든 대상에 대한 차단 정책이 기본적으로 생성되며 그 어떠한 정책에도 부합하지 는 패킷은 이 차단정책에 의해 필터링된다.
+	inbound 들어올때 검사
+	outbound 나갈때 검사
+	
+	명령어
+		Step1 ( Access list 정책(필터) 만들기 )
+		R1(config)# access-list access-list-number {permit | deny} {test conditions}
+			 Access-list :설정명령어
+			Access-list number : ACL name, 구분하는 숫자 standard (1~99)/ Extended(100~199)
+			permit | deny : entry 허용 여부 결정(둘중에 하나만 결정)
+			test condition : entry 검사 조건 내용
+		Step2 (필터링 적용)
+		R1(config-if)# ip access-group access-list-number {in|out}
+			{in|out} : 엑세스 리스트 검사 적용 정책 (in:인터페이스로 들어가는 데이터 out:나가는데이터)

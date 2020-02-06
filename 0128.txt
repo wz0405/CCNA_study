@@ -1,0 +1,32 @@
+스태틱 라우팅
+	1 수동으로 입력하는 방식이다.(고정적)
+	2 경로 관리에 효율적이다(트래픽관리에 효율적)
+	3 네트워크 변화에 동적인 대응을 할 수 없다.(네트워크 변동사항을 직접수정,복잡한방식에 불리함)
+	정적경로설정
+		-ip route network mask {address | interface}(방향성) (대표주소쓰기)
+			network mask : 도착지 네트워크 및 서브넷마스크(범위)
+			address : 도착지 네트워크로 도달하기 위한 next-hop address(이웃장비 주소)
+			interface : 도착지 네트워크로 도달하기 위한 next-hop router와 연결된 local interface(나가는 곳)
+			-outgoing interface설정
+	실습
+		R1에서는 Outgoing-interface로 설정하고 R2에서는 Next-hop address로 설정한다.
+		라우팅 설정후 show ip router 명령어로 라우팅 테이블을 확인한다.
+			R1 ip route 192.168.20.0 255.255.255.0 s0/0
+			R2 ip route 192.168.10.0 255.255.255.0 s0/0 을 통해 서로 연결시킴
+
+	실습문제
+		라우팅에서 확인하는주소는 목적지 주소가 중요함
+		전체통신이 되려면 네트워크개수와 라우팅테이블의 개수가 같아야함
+
+enable
+conf t
+hostname R13
+enable secret cisco
+no ip domain-lookup
+line console 0
+exec-timeout 0 0
+logging synchronous
+exit
+line vty 0 4
+no login
+exit

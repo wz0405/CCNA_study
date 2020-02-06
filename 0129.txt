@@ -1,0 +1,43 @@
+루프백
+	-config# interface loopback 0(루프 벡에서 일반적사용)
+	-가상의 인터페이스(시리얼은 물리적으로 남에게 전달 ,루프백은 자신이 자신에게 전달받음)
+	-테스트용도로 쓰임
+	-관리적인 목적
+
+실습
+	-ping 14.14.2.2 source 14.14.1.1 (소스핑:출발지 지정 후 사용할때)
+		출발지에 따라서 통신 유무가 달라짐
+	-do(명령어를 다른모드에서 사용가능 :conf t에서 #모드 기능)
+	-show ip route static(스태틱한 라우팅 테이블만보기)
+
+Default Routing
+	네트워크가 말단에 있는경우(단일구성) => Stub network
+		=>라우팅 테이블의 경로가 단일 경로로 이루어짐
+			-ip route 0.0.0.0 0.0.0.0 serial 1/1 (모든주소 Se1/1)
+
+다이나믹 라우팅
+	1. 자동으로 입력되는 방식이다.
+	2. 네트워크 변화에 동적인 대응을 할 수 있다. 
+	3. 추가적인 트래픽이 발생한다.
+	-수정,변동된 정보를 인접 장비들에게 알림
+		AS : 관리집합			EGP(AS-AS간통신)		AS : 관리집합
+		     IGP(게이트웨이안에서사용)			                 IGP
+	RIP,EIGRP,OSPF,Intergrated IS-IS	<-----	BGP     ----->	IGP:RIP,EIGRP,OSPF,Intergrated IS-IS
+
+	유니케스트 라우팅
+		IGP - Distance Vector(목적지까지의 거리를 알고 이용함,경로재탐색이 어려움) - IGRP, RIPv1 -classful
+		     - Advance Distance Vector(기존과 업데이트차이) - RIPv2,EIFRP -classless
+		     - Link State(인터페이스의 상태정보를 알려줌 ex노선도, 전반적인 상황을 알 수있음) - OSPF, IS-IS -classless
+
+	Distance Vector			Link State
+	목적지에 대한 경로정보 전달		연결된 네트워크 정보 전달
+	전체 네트워크 파악 불가		전체 네트워크 파악 가능
+	느린 수렴시간(변동사항 수정완료시간)	빠른 수렴시간
+	간편한 설정			복잡한 설정
+
+	매트릭
+		Distance Vector에서 ( 각 프로토콜마다 어떤 경로를 더 우선적으로 생각하는지는 매트릭 계산값에 따라 달라진다. )
+		RIP : Hop 카운트(라우터의 개수)를 메트릭으로 사용 ex)네비게이션의 km
+		EIGRP: K상수라고 부르는 5가지 매개변수 사용 (Bandwidth / Delay(기본사용), Load, Reliability, MTU)
+		Administrative Distance 경로가 결정되어있음 작은값일수록 기본값으로 쓰임  RIP AD :120 , EIGRP AD :90, Static AD:1
+	

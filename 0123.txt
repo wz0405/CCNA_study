@@ -1,0 +1,59 @@
+실습
+	1.UTP 케이블로 위 토플로지대로 장비를 연결한다.
+	2.지정된 네트워크 대역으로 IP를 설정하는데 Host-ID는 장비 번호를 쓴다.
+	3.Hostname 및 콘솔 기본설정을 한다.
+
+CDP(Cisco Discovery Protocol)
+	연결성을 확인하는 프로토콜
+	이웃(neighbor,peer)장비(바로옆에있는:next hop)의 정보를 획득함.
+	포함된정보
+		호스트네임, 주소정보, 포트정보, 장비성격(라우터/스위치/시리즈,운영체제):설정관리에 유용함(이웃장비의 연결설확인가능) ,기종
+	CDP는 60초 간격으로 갱신 => 정보가있으면 통신이 된다는뜻
+	-show cdp neighbor(표에 형태로 간략하게 정보확인가능) 
+		보통 유예기간(hold time)을 3배이상 시간동안 기다림
+	-show cdp neighbor detail or show cdp entry(상세정보 출력)
+	Background트래픽(줄이면줄일수록 좋음)/ User트래픽 
+	전역설정 :(no) cdp run(인터페이스 :(no) cdp enable) / 인터페이스,전역모드에서 사용가능 => 목적에 따라 다름
+
+Telnet(7계층)
+	-TCP사용
+	-원격지에있는 장비에 접속할때 사용
+	-통신이 가능한 장비가 필요함.
+	-텔넷 접속을 위한 라인모드진입
+		-line vty
+	-콘솔접근 시 오직 한사람만 접근 가능 / Virtual Terminal접근시 여러 사람이 동시에 접근 가능
+					보통16개 포트 <0~15>사용가능
+	-line vty <first-line-num> <last-line-num>
+		     0		4 Cisco 시험에서 기본적으로 사용되는 값
+
+	-password(비밀번호) (외부에 노출됬을 시 취약함)
+	-login
+	사용자에 따른 접속 계정 설정
+	-username ____ password _____ (사용자 계정생성후 권한부여)
+	-line vty <first-line-num> <last-line-num>
+	-login local
+	무 인증 설정
+	-no login
+	-telnet 목적지주소 : (연결시도)
+	-연결된 모든 장비에 텔넷이 설정되어 있다면 각 장비를 지나쳐 모든 장비에 텔넷으로 접속할 수 있다.
+	-예를 들어 라우터A에서 라우터 B로 텔넷이 접근한 상태에서 또다른 장비인 라우터C에게 텔넷으로 돌아올 수 있다.
+실습
+	
+
+	1.R1에 패스워드 인증 방식으로
+		conf t
+		line vty 0 4
+		 password network
+		 login
+	2.R2에 인증 비활성화(무인증)
+		conf t
+		line vty 0 4
+		no login
+	3.R3에 사용자 계정 인증
+		conf t
+		username admin password cisco
+		line vty 0 4
+		 login local
+	exit(접속종료)
+	기본설정(enable password/console password)이 되어있어야 텔넷 접근가능
+		 

@@ -1,0 +1,12 @@
+실습
+	물리적으로 동일한 네트워크안에 있어야 통신가능
+
+	서버
+		Desktop탭
+			IP Configuration (IP/서브넷마스크/Default GateWay)
+			게이트웨이는 가장가까운 라우터의 주소
+		규칙
+		IP주소설정시 세번째 옥텟은 장비의 번호를 조합 ex) R1 R2 = x.x.12.x
+			     네번째 옥텟은 장비의 번호 ex) R1 = x.x.x.1
+		show controllers s0/0
+			DCE/DTE 구분가능

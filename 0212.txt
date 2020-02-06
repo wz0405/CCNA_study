@@ -1,0 +1,69 @@
+Network Address Translation
+	-네트워크 주소 고갈현상을 막기위해 사용
+	-사설 IP 주소사용(중복이 가능함)
+		A class : 10.0.0.0/8 (~10.255.255.255)
+		B class : 172.16.0.0/12 (~172.31.255.255)
+		C class : 192.168.0.0/16 (~192.168.255.255)
+	-직접 외부 네트워크 통신이 불가능한 주소
+	-IP를 아껴서 쓸수있음
+	-IP 헤더에 있는 주소를 다른 주소로 바꾸는 기술, 주로 사설주소를 사용하는 호스트들이 인터넷 서비스를 이용할 수 있게 하려고 사용
+	-회선 하나로 여러 장비를 연결할수 있음
+
+Static NAT
+	-하나의 사설 ip와 하나의 공인 ip주소를 1:1로 매핑하는 방식
+	-서버가 동작중인 사설 네트워크인 경우 외부 사용자들이 접속할 수 있도록 고정적인 주소 매핑이 필요하기때문에 static 방식을 사용
+	-ip를 바꿔놓으면 이중으로 ip를 찾아야되므로 보안상 유리함
+도메인설정
+	-인사이드(내부,사설) : 출발지 주소를 바꿔야 공인으로 바꿈
+	-아웃사이드(외부,공인) : 목적지 주소를 사설로 바꿈
+명령어
+	-R1(config)# ip nat inside source static local-IP global-IP
+		-ip nat inside source static:사설과 공인이 고정적으로 변환
+	-R1(config-if)#ip nat inside 
+		사설ip
+	-R1(config-if)#ip nat outside
+		공인ip
+	-show ip nat translations (테이블 확인 명령어)
+	-clear ip nat translation * (nat 테이블 내용삭제)
+
+실습
+	1)NAT 매핑설정
+		ip nat inside source static 10.10.10.1 200.1.1.1
+	2)int 설정
+		int fa0/0
+		ip nat inside
+		int s0/0
+		ip nat outside
+Dynamic NAT
+	여러개의 사설 IP와 여러개 혹은 하나의 공인 IP주소를 필요에 따라 동적으로 매핑하는 방식
+	-대부분 공인 IP주소가 사설 IP주소보다 적을경우에 사용
+	-Basic NAT는 일시적이지만 IP:IP로 매핑되기 때문에 하나의 공인 IP를 여러 사설 IP가 공유할 수 없지만 Port번호를 사용하는 PAT는 공유가능
+	-pool안에 있는 공인 ip주소를 사설ip가 가져다씀(Basic nat)
+	-포트번호(임의적으로 생김)와 IP주소를 결합해서 같이 식별함 => NAT PAT
+명령어
+	-ip nat inside source list (acl-number) pool (pool-name) [overload]
+		ex ) 5번 리스트에 있는 주소들은 pool A의 주소들로 바꿀수 있다.(직접매핑x)
+	ip변환에 사용할 전역 주소 풀 설정
+		-ip nat pool name start-ip end-ip(가용ip시작과끝) {netmask mask | prefix-length prefix}
+	nat로 ip변환을 허용할 주소 설정(standard access list 사용)
+		-access-list 1~99 permit source-ip{wildcard}
+			1~99 사설 범위를 지정하기 위한 리스트번호
+			permit access list 적용규칙
+255-15 240
+실습
+	1)ACL과 Pool 생성
+		-Local IP : 10.1.1.0/24
+		-global IP : 14.3.3.0/24
+		access-list 1 permit 10.1.1.0 0.0.0.255
+		ip nat pool A 14.3.3.1 14.3.3.254 netmask 255.255.255.0
+	2)NAT mapping 설정
+		ip nat inside source list 1 pool A
+	3)interface 설정
+	 	interface f0/0
+		ip nat inside
+		interface s0/0
+		ip nat outside
+	4)확인
+	PC에서 서버로 ping 통신후에 nat table 확인
+		(동적으로 통신이 일어나는 시점에 매핑되기 때문에 static nat처럼 테이블에 정보가 미리 올라와 있지않음)
+		서버에서 pc 통신시 동적할당이 아닌 static으로 할당해야함

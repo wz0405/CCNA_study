@@ -1,0 +1,102 @@
+네트워크 장비
+	허브(1계층장비<=전기적신호증폭만 가능)
+		-동일한 네트워크 내 통신
+		-전기 신호의 증폭만을 담당
+		-Half-duplex
+		-트러블슈팅이 어려움
+		-충돌 감지,대처가 불가능
+		-collision domain이 점점 커짐
+
+	스위치(2계층장비)
+		-동일한 네트워크 내 통신
+		-full-duplex
+		-주소학습 가능
+		-foward/filter 기능
+		
+	라우터(3계층장비)
+		-네트워크 구분 및 통신
+		-다양한 데이터링크의 연결을 지원
+		-full-duplex
+		-라우팅이 가능한 장비로 한 네트워크의 게이트웨이로 사용
+		-데이터를 읽고 처리가능
+		-collision domain은 나눌수있음
+		-브로드캐스트 도메인을 분할할 수 있음
+		-포트개수가 적음(포트당 단가가높음)
+
+	스위치의 종류
+		-네모 아이콘
+		-L2스위치(2940,2950,2960)
+		-Multi-layer switch(3350,3360.3750등등)
+		-고정형(포트의 역할과 개수가 정해져있음)
+		-확장형(포트의 역할과 개수가 정해져있지않음=>만들어서 사용가능)
+	
+	라우터의 종류
+		-동그라미 아이콘
+		-확장형을 주로사용
+		-슬롯에 모듈을 넣어서 지정후 사용가능
+	
+	라우터 포트의 역할
+		-이더넷 AUI port : Lan 통신을 위해사용(UTP케이블)
+		-Serial port : Wan 통신을 위해 사용(시리얼케이블), ppp, 원격접속등등
+		-Console port : 근거리 접속 (내부접근)
+		-Auxiliary port : 원거리 접속 (외부에서 내부로 접근)
+		-슬롯 : 모듈장치를 연결해서 사용가능(필요한 포트에 따라), NM(큰 모듈)/WIC(작은모듈)
+			ex) NM-4E (이더넷포트가 4개) WIC-2T(씨리얼포트가 2개)
+	실습(장비연결)
+		2621장비에 시리얼포트 추가
+			전원종료후 WIC-1T추가 -> 전원on
+		DCE/DTE케이블 설정
+		option-preference -> always show port number(포트넘버표시)
+	라우터케이블
+		DTE/DCE : 클럭조정위치 표시(한쪽위치에서 지정후 반대쪽에 흘려보내줌)
+		DCE : 중앙장비(클럭시그널 변환이 가능해야함, 통신속도 조절)
+		DTE : 가장끝에있는 Lan통신, 데이터를 받을 마지막 라우터
+		라우터와 라우터 연결은(DTE/DCE)중요하지 않지만 클라우드 설정시 DCE설정을 해야함.
+		클럭설정을 하기위해선 DCE가 필요함
+	모뎀 : 모듈레이션 디모듈레이션가능한 장비 ex) 아>디 디>아
+
+	Cisco IOS(internetworking Operation System)
+		운영체제가 장비마다 설정되어있음
+		구성작업
+			-네트워크에서 요구되는 다양한 정책설정
+			-프로토콜 주소와 관련 옵션 설정
+			-IOS 장비 관리를 위한 관리 option
+			스위치 : 초기구성 정보를 메모리에 저장되어있다.(역할이 정해져있음,멀티엑세스,내부)
+			라우터 : 초기구성 정보를 사용자가 지정해야한다.
+
+		IOS Command Line Interface
+			-IOS가 제공하는 가장 기본적인 사용자 인터페이스이다.
+			-CLI는 사용자가 명령어를 직접 입력하는 방식
+			-IOS 장비의 종류에 따라 다양한 명령어 제공
+			-콘솔안에서 명령어의 직접/간접 입력이 가능하다.
+			-실행모드는 크게 user모드와 privileged모드가 있다.
+			-명령어 모드에 따라 다양한 prompt를 제공한다.
+		 	
+		CLI Help funtion
+			-Command List제공(명령어 조합 및 각 단계마다 수행할 수 있는 명령만 표시) ? 입력시 확인가능
+			-Message <- 라우터에서 발생할 수 있는 문제를 정의(문제를 수행할 수 있도록 도와줌) << (로그로 보여줌)
+			-History <- 사용한 명령을 버퍼에 저장(재사용,버퍼 크기조절가능)
+		
+		Router(호스트이름)  >(Router prompt Mark)
+			종류
+			User Mode : 장비에서 처음 보여지는 누구나 접속할 수 있는 모드로 제한된 명령어만 사용가능
+						ex) Router>
+			Privileged EXEC Mode: 관리를 위한 여러 모드중 가장 기본이 되는 모드이다.
+					     설정을 위한 설정모드로 진입하는 모드이며 설정된 정보확인가능
+						ex) Router> enable  ====> Router#
+						실시간정보확인 : debug
+			Grobla Configuaration Mode: 설정 모두중 가장 기본적인 모드이며 장비에 전반적인 영향을 주는 성정
+						ex)Router# configure terminal ====> Router(config)#
+
+		실행모드 변경
+		Router > enable
+		Router# configure terminal
+		실습(라우터장비 CLI)
+			pc와 라우터연결후 설정
+			enable(관리자모드) / disable / ? / configure terminal(설정모드) / hostname(이름바꾸기)
+			no ip domain-lookup(DNS서비스 비활성화,오타시 DNS서버 켜짐방지) / exit(전단계로) / end(한번에 나감)
+			/ enable password word(접근암호설정 clear Text ,공개) / enable secret word(접근암호설정 encryption, 암호화)
+			/ show running-config(명령어 입력된 파일보기) /
+				 설정모드에서 line console 0 (콘솔설정, 콘솔은하나만 있으므로 0만가능) //이중보안용
+				/ exec-timeout 0 0 (타임아웃설정 분 초 ) /  logging synchronous (로그 쉽게보기) / password / login(활성화)\
+ccna cisco123

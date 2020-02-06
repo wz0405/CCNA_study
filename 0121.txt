@@ -1,0 +1,54 @@
+라우터의 인터페이스 설정
+	-configure terminal => conf t 로 입력가능
+	-메모장에 명령어 저장 후 템플릿처럼 이용가능
+
+	이더넷연결시
+		(라우터): IP주소,인터페이스 비활성화(닫혀있음)가 되어있음
+		(스위치):인터페이스가 활성화되어있음
+		대역폭(한번에 데이터를 보내는 양)이 지정되어있음 (10mbps,100mbps....)
+			ex)차선(속도에 밀접한 관련이있음)
+	시리얼연결시 프로토콜을 설정해줘야함 (디폴트:HDLC)
+		클럭(시그널)설정과 대역폭 을 조정가능함, 셋팅값을 확인해야함
+	전역설정 -> 세부설정모드로 해야함
+		명령어 전역설정모드에서 interface { serial | fastethernet//타입선택 } slot / port  //슬롯 포트선택
+		명령어 사용시 위치를 잘보고 지정해야함
+		인터페이스 모드( interface { serial | fastethernet//타입선택 } slot / port ) 진입후 	
+		시리얼		
+		/* ip address(*필수로 선택, 가용IP에서 골라서 사용, 주소와 서브넷마스크설정)
+		/ encapsulation {ppp | hdlc | frame-relay}  (프로토콜 선택하기(필수는아님) default = hdlc)
+		/ bandwidth (대역폭 지정값 <1~10000000> Kbit단위 ex)100메가 => 100,000 입력)
+		/ clock rate (클럭설정 <300~4,000,000> bps단위=> DCE만 설정가능/ ?를 입력해서 선택해야만함)
+				대역폭 지정값이 없을시, 대역폭보다 낮은값을 선택해야함
+	  	/* no shutdown (셧다운해제)		
+		이더넷
+		ip address / no shutdown 만 설정
+		연결확인
+			#모드에서 ping/ traceroute
+		실습1) 
+			<L2 프로토콜 PPP설정>
+			ip 10.1.1.0 / 24 / 타입ppp / 대역폭 64kbps => 모든것 설정후 연결확인시 ! << 연결됨
+			conf t
+			interface serial 0/0
+			ip address 10.1.1.2 255.255.255.0
+			encapsulation ppp
+			bandwudth 64
+			no shutdown
+			end
+		<설정확인 명령어>
+			-인터페이스 간략확인
+				show ip interface brief
+					Status L1 (administratively < shut down 되어있음)
+					Protocol L2 (up이면 이상없음 down 이상있음)
+					1계층이 다운되면 2계층도 다운됨
+			1계층다운시 제일먼저 확인해야할 것 케이블/상대 디바이스 확인
+			-인터페이스 상세확인
+				show interface {type slot/port}
+			-연결성 확인
+			 	ping x.x.x.x(목적지IP)
+			-'현재 적용중'인 전체적 설정 확인
+				show running-config(RAM, Active Config 파일이므로 설정된 내용은 시스템에 적용)
+				show startup-config(NVRAM,비휘발성,Router Reload시에 라우터를 초기구성에사용)
+			저장은 프리빌리지모드에서 쓰임
+				copy running-config startup-config => enter(대답을 요구하지않음)
+				(=write)
+			reload(껏다키기) <=NVRAM에 저장시에는 기존내용이 유지됨

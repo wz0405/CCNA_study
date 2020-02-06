@@ -1,0 +1,112 @@
+IP 헤더	
+              
+  ===	버전	IHL	Type of Service	Total Length		 
+     '	v4/v6	헤더길이	우선순위설정시	MTU(1500Byte)최대크기제한
+     '
+     '	identification	IP Flags x D m	Fragment Offset	
+     '	조립을위한id정보			조립순서
+     ' 20
+     ' b	Time To Live(TTL)	  Protocol	Header Checksum
+     ' y	라이프타임을 주어줌 상위계층의 프로	오류검출
+     ' t	도달하지않으면 폐기 토콜을 나타냄
+     ' e     홉카운트사용
+     '        윈도우128 유닉스64
+	 other 255
+     '        지나가면서 -1씩감소 
+     '        0이되면 폐기
+     '
+     '	출발지 주소
+     '	
+     '	목적지 주소
+  ===
+
+*ICMP Protocol(internet control message protocol)
+	1.IP의 신뢰성을 보완해주는 프로토콜
+		IP는 신뢰성이 없으므로 오류 정보를 송신측에 메세지로 전달하는 기능수행
+	2.ping(유틸리티)
+		연결성 확인
+		ICMP "에코 요청"과 "에코 응답"메세지를 사용해 구현할수 있다.
+		이 방식을 이용하여 특정 컴퓨터와의 통신 상태를 체크한다.
+		Echo:  받으면 받는대로 트래픽을 전송함(논리적 물리적 연결확인시 사용)
+	3.traceroute,tracert(유틸리티)
+		경로추적의 목적이있음
+		트레이스라우트 명령어는 특별하게 만들어진 IP TTL헤더 필드들을 가진
+		IP데이터 그램을 전송하고 응답에서 ICMP TTL 초과 메세지와 목적지에 닿을 수
+		없음 메세지가 생성되었는지 찾는다.
+	실습 cmd
+	ping 8.8.8.8 응답시간이 중요함
+	ping -i 7(TTL을 7개로 제한) 8.8.8.8 72.14.194.106 연결이 불가능함을 장비가 알려줌(패킷이 전송되지 못할경우)
+	tracert 8.8.8.8 (경로를 알수있음<추적 , *은 응답을 보내지 못한것(보안,트래픽이몰려서), 라우터의 개수와 주소를 알수있음)
+
+	헤더
+		Type		code			checksum		other message
+		0 에코응답	0 네트워크에 연결x
+		8 에코요청	1 호스트에 연결x
+		3 목적지연결불가	..13 통신금지
+		Type과 code가 조합됨
+
+ARP Protocol(Address Resolution Protocol)
+	주소(논리적)로만 물리적위치를 확인하기위해서 사용
+	3계층역할이 끝나고 2계층역할 시작전에 사용 
+	ex)
+		Src:192.168.57.100 	/24  L3목적지
+		Dst:8.8.8.8	      L3목적지
+		1. L2 목적지(이더넷) 결정 ( 물리적 장치 ) - L3목적지와 동일 :같은네트워크
+						  - Gateway(라우터) :다른네트워크
+		2. ARP Table 확인(DB) - 정보가 있을때 => 완료
+				   - 정보가 없을때 => request 
+	
+	헤더
+	하드웨어타입	L2proto	프로토콜타입 L3 proto
+	하드웨어/프로토콜길이	Operation
+	송신자(저장하는값) / 수신자(보낼지말지 확인하는값) 프로토콜 / 하드웨어 주소
+	ARP Cache Table은 임시적으로 정보를 저장함 간혈적으로 저장하기 때문에 자동적으로 정보가 삭제된다
+
+4계층 Transport Layer
+	서비스 구분
+		-상위계층 서비스를 구분하여 통신망을 통해 수신한 데이터를 정확한 어플리케이션으로 넘겨줄 수 있다.
+		-이 때 사용하는 식별 값을 포트 넘버라고 부르면 16bit로 구성되며 0~65535번까지 표시가능
+		-0~1023번은 Well-known Port-number로 사용
+		-1024~49151 번은 registered Port-number 번호 사용 
+		실습) C > windows > system32 > drivers > etc > services  (포트번호)
+
+	전송 방식2가지
+		TCP		 &		UDP (4계층 생략을 위해 사용됨,실시간)
+		제어기능o(재전송)			제어기능x(재전송x)
+		신뢰성있는통신			신뢰성없는통신
+		대용량데이터 전달에적합		소용량데이터 전달에 적합
+		통신속도가비교적느림		통신속도가 비교적빠름
+
+	TCP 3Way Handshake
+		Client <------------------------------------------->Server
+			1.HTTP 통신요청(syn)
+			2.서버의(Ack)받은후 통신시작(syn)
+			3.Client의 (Ack)
+			=3개의 패킷사용
+	      4Way Handshake
+			1.통신 종료를 요청(FIN)
+			2.서버에게 Ack를 받음
+			3.통신종료 (fin)
+			4.서버에게 Ack를 줌
+			=4개의 패킷사용
+	헤더
+	==	Source Port		Destionation Port				           ==
+	 '		Sequence Number(순서번호<=데이터조립을위해사용)			'
+    20byte	 '		Acknowledgment Number(Ack 확인응답 <= 오류제어를 위해 사용)		'
+	 '	offset Reserved TCP Flags     Window(흐름제어<=한번에 처리할수있는 데이터의양표시)	' offset
+	 '	Checksum(오류검출)	Urgent Pointer(긴급하게 처리해야되는 위치 표시)		'	
+	==										'
+				TCP Options	                                                              ==
+				
+	Flag(체크박스) = URG | ACK | PSH | RST | SYN | FIN
+		URG : Urgent Pointer에 값의 유무표시 있으면1 없으면0
+		ACK : Acknowledgment Number값의 유무표시 있으면1 없으면0
+		PSH : push 현재 4계층 데이터가 어플리케이션 계층으로 전송시 사용(한번에 모아서 데이터전송)
+		RST : reset 현재 TCP연결을 재전송할때 사용 ,긴급하게 종료가 필요할때도 사용
+		SYN : 세션을 연결할때 통신이 가능한 상태로 맞추기위해서 사용(상태확인)
+		FIN : 세션을 종료할때 사용
+
+	UDP 헤더
+		Sorce Port		Destination Port
+		Length			Checksum
+		TCP에 비해 기능 대폭축소

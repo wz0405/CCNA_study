@@ -1,0 +1,18 @@
+<모드 변경>
+enable		: 관리자(privileged)모드로 변경
+disable		: 사용자(user)모드로 변경
+configure terminal	: 전역설정(global configuration)모드로 변경
+exit, end		: 전 단계로 변경
+
+
+<기본 설정>
+hostname XX	    : 장비 이름 설정
+enable password XX    : enable에 비밀번호 설정
+enable secret XX
+
+line console 0	    : 콘솔 설정 모드로 진입
+exec-timeout 분 초	    : 콘솔 세션 유지시간 설정 (0분 0초는 무제한)
+logging synchronous    : 명령어 동기화 설정
+password XX	    : 콘솔 비밀번호 설정
+login
+
